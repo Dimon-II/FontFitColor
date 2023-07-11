@@ -84,12 +84,12 @@ type
   private
     hh:THandle;
     Bmp:Vcl.Graphics.TBitmap;
-    FontData:array of byte;
     FFontFace:TFontFace;
     iSVG :integer;
 
 
   public
+    FontData:array of byte;
     ttOffsetTable: TT_OFFSET_TABLE;
     ttTableDirectory: array of TT_TABLE_DIRECTORY;
     ttSVGDocuments: array of TSVGDocumentRecord;
@@ -115,7 +115,7 @@ type
 
 implementation
 
-uses Math;
+uses Math, System.ZLib;
 
 type
     //  Header of the names table
@@ -264,8 +264,9 @@ var i, iHMTX: integer;
   z,pz:integer;
   dc : hdc;
   cnv:Vcl.Graphics.TBitmap;
-  BufStream:TMemoryStream;
-  s:array of byte;
+  BufStream,ZStream:TStream;
+//  s:array of byte;
+  s,s1: TBytes;
 begin
   FFontFace.FileName:='';
   if hh<>0 then
@@ -553,14 +554,25 @@ begin
     SVGObject.SVGRecord.svgDocOffset := Swap32(ttSVGDocuments[i].svgDocOffset);
     SVGObject.SVGRecord.svgDocLength := Swap32(ttSVGDocuments[i].svgDocLength);
 
-    BufStream:=TMemoryStream.Create;
     Stream.Position :=  OffsetSVG + SVGObject.SVGRecord.svgDocOffset;
 
     SetLength(s,SVGObject.SVGRecord.svgDocLength);
-    Stream.Read(s[1],Length(s));
-    BufStream.Write(s[1],Length(s));
+    Stream.Read(s[0],Length(s));
+
+    BufStream:=TMemoryStream.Create;
+    BufStream.Write(s[0],Length(s));
     BufStream.Position := 0;
-    SVGObject.LoadFromStream(BufStream);
+
+
+    if (s[0]=$1F) and (s[1]=$8B) and (s[2]=$08) then
+    try
+      ZStream := TZDecompressionStream.Create(BufStream, 16);
+      SVGObject.LoadFromStream(ZStream);
+    finally
+      ZStream.Destroy;
+    end
+    else
+      SVGObject.LoadFromStream(BufStream);
     BufStream.Free;
   end;
 
@@ -579,11 +591,16 @@ begin
   end;
 end;
 
+function Compare1(Item1, Item2: Pointer): Integer;
+begin
+  Result := CompareValue(TSVGObject(Item1).SVGRecord.startGlyphID, TSVGObject(Item2).SVGRecord.startGlyphID);
+end;
+
 procedure TdyTTF.SaveToStream(Stream: TStream);
 var
   ms:TMemoryStream;
   i,j: integer;
-  OldPos,SizePos:Cardinal;
+  OldPos,SizePos, SvgPos:Cardinal;
   buf32:Cardinal;
   buf16:word;
   buf16i:SmallInt;
@@ -594,14 +611,18 @@ var
   RangeShift    : Word; // numTables * 16 - searchRange
   TBL:TT_TABLE_DIRECTORY;
   ZeroByte:byte;
+  SVGObject:TSVGObject;
 
 begin
   ZeroByte:=0;
   ms:=TMemoryStream.Create;
   try
     for i := SVGFiles.Count-1 downto 0 do
-      if trim(TSVGObject(SVGFiles[i]).Text) = '' then
+      if (trim(TSVGObject(SVGFiles[i]).Text) = '')
+      then
         SVGFiles.Delete(i);
+
+    SVGFiles.SortList(Compare1);
 
 //uint32	sfntVersion	0x00010000 or 0x4F54544F ('OTTO') — see below.
     buf16 := swap16(1);
@@ -641,7 +662,18 @@ begin
     //tableRecord	tableRecords[numTables]	Table records array—one for each top-level table in the font
     for i:= 0 to length(ttTableDirectory)-1   do
     begin
-      if ttTableDirectory[i].szTag = 'SVG ' then Continue;
+      if ttTableDirectory[i].szTag = 'SVG ' then
+      begin
+{
+        SvgPos := ms.Position;
+
+        ms.Write(ttTableDirectory[i].szTag,4);
+        buf32 := swap32(TBL.uCheckSum);  ms.Write(buf32,4);
+        buf32 := swap32(TBL.uOffset);    ms.Write(buf32,4);
+        buf32 := swap32(TBL.uLength);    ms.Write(buf32,4);
+}
+        Continue;
+      end;
       TBL := ttTableDirectory[i];
 
       TBL.uOffset := ms.Size;
@@ -688,6 +720,7 @@ begin
       buf32 := 10; buf32 := swap32(buf32);  ms.Write(buf32,4);
 //uint32 reserved Set to 0.
       buf32 := 0; buf32 := swap32(buf32);  ms.Write(buf32,4);
+
 //uint16 numEntries Number of SVG document records.
       buf16 := swap16(SVGFiles.Count);  ms.Write(buf16,2);
 
@@ -722,7 +755,7 @@ begin
       ms.Write(TBL.szTag,4);
       buf32 := swap32(TBL.uCheckSum);  ms.Write(buf32,4);
       buf32 := swap32(TBL.uOffset);    ms.Write(buf32,4);
-      buf32 := swap32(TBL.uLength);    ms.Write(buf32,4);
+      buf32 := swap32(TBL.uLength+10);    ms.Write(buf32,4);
     end;
 
     ms.Position := 0;
@@ -777,7 +810,8 @@ constructor TSVGObject.Create;
 begin
   Inherited;
   UndoStack:=TStringList.Create;
-  UndoIdx:=0
+  UndoIdx:=0;
+  TrailingLineBreak := False;
 end;
 
 destructor TSVGObject.Destroy;

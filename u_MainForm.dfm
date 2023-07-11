@@ -11,9 +11,7 @@ object FormMain: TFormMain
   Font.Name = 'Tahoma'
   Font.Style = []
   Menu = mmMainMenu
-  OldCreateOrder = False
   OnCreate = FormCreate
-  PixelsPerInch = 96
   TextHeight = 13
   object StatusBar1: TStatusBar
     Left = 0
@@ -21,6 +19,8 @@ object FormMain: TFormMain
     Width = 1264
     Height = 19
     Panels = <>
+    ExplicitTop = 561
+    ExplicitWidth = 1260
   end
   object pnMain: TPanel
     Left = 21
@@ -33,6 +33,8 @@ object FormMain: TFormMain
     DockSite = True
     ParentBackground = False
     TabOrder = 1
+    ExplicitWidth = 1239
+    ExplicitHeight = 561
   end
   object DockTabSet: TDockTabSet
     Left = 0
@@ -51,6 +53,7 @@ object FormMain: TFormMain
     TabPosition = tpLeft
     Visible = False
     DestinationDockSite = pnMain
+    ExplicitHeight = 561
   end
   object mmMainMenu: TMainMenu
     Images = ilMain
@@ -7553,7 +7556,7 @@ object FormMain: TFormMain
       OnUpdate = aSaveTTFUpdate
     end
     object aClearSVG: TAction
-      Caption = 'Clera SVG'
+      Caption = 'Clear SVG'
       Hint = 'Clear SVG glyph'
       ImageIndex = 9
       ShortCut = 16430

@@ -192,9 +192,11 @@ begin
       dyTTF.SVGFiles.Delete(idx);
       lv_Font.UpdateItems(lv_Font.Selected.Index,lv_Font.Selected.Index);
       rgd_Tables.Cells[4,SvgRow] :=  IntToStr(dyTTF.SVGFiles.Count);
+      FormGlyph.fSelectedChar:=#0;
       FormGlyph.SetGlyph(char(lv_Font.Selected.ImageIndex),
                          StrToIntDef(lv_Font.Selected.SubItems[0],0),
                          dyTTF.GetSVG(StrToIntDef(lv_Font.Selected.SubItems[0],0)));
+
     end;
   end;
 end;
@@ -294,7 +296,7 @@ begin
       idx := dyTTF.GetSVGIndex(StrToIntDef(lv_Font.Items[i].SubItems[0],0));
       if idx=-1 then continue;
       fn := FormSvgFolder.SvgFolder + '\U+' +IntToHex(lv_Font.Items[i].ImageIndex,4)+ '.svg';
-      (dyTTF.SVGFiles[idx] as dy_TTFHelper.TSVGObject).SaveToFile(fn);
+      (dyTTF.SVGFiles[idx] as dy_TTFHelper.TSVGObject).SaveToFile(fn, TEncoding.UTF8);
       inc(cnt);
     end;
     if FormSvgFolder.treeFolders.Selected <> nil  then
@@ -490,7 +492,7 @@ begin
   FormMain.SaveSVGDialog.FileName := StringReplace(FormSvgFolder.SvgFolder + '\U+' +IntToHex(FormTTF.lv_Font.Selected.ImageIndex,4)+ '.svg','\\','\',[]);
   if FormMain.SaveSVGDialog.Execute then
   begin
-    (dyTTF.SVGFiles[idx] as dy_TTFHelper.TSVGObject).SaveToFile(FormMain.SaveSVGDialog.FileName);
+    (dyTTF.SVGFiles[idx] as dy_TTFHelper.TSVGObject).SaveToFile(FormMain.SaveSVGDialog.FileName, TEncoding.UTF8);
     FormSvgFolder.treeFoldersChange(FormSvgFolder.treeFolders, FormSvgFolder.treeFolders.Selected);
   end;
 end;

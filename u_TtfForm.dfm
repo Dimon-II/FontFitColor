@@ -12,9 +12,7 @@ object FormTTF: TFormTTF
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   OnCreate = FormCreate
-  PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
     Left = 0
@@ -25,6 +23,7 @@ object FormTTF: TFormTTF
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 0
+    ExplicitWidth = 780
     object PageScroller1: TPageScroller
       Left = 0
       Top = 0
@@ -156,6 +155,7 @@ object FormTTF: TFormTTF
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 1
+      ExplicitLeft = 637
       DesignSize = (
         143
         39)
@@ -211,6 +211,8 @@ object FormTTF: TFormTTF
     OnDragDrop = lv_FontDragDrop
     OnDragOver = lv_FontDragOver
     OnSelectItem = lv_FontSelectItem
+    ExplicitWidth = 780
+    ExplicitHeight = 521
   end
   object SplitView1: TSplitView
     Left = 784
@@ -219,7 +221,7 @@ object FormTTF: TFormTTF
     Height = 522
     AnimationStep = 240
     Opened = False
-    OpenedWidth = 480
+    OpenedWidth = 400
     Placement = svpRight
     TabOrder = 2
     object pn_FontName: TPanel
@@ -250,14 +252,17 @@ object FormTTF: TFormTTF
       FixedCols = 0
       RowCount = 2
       TabOrder = 1
+      ExplicitHeight = 465
     end
     object me_FontFace: TMemo
       Left = 300
       Top = 56
-      Width = 248
+      Width = 100
       Height = 466
       Align = alClient
       TabOrder = 2
+      ExplicitWidth = 248
+      ExplicitHeight = 465
     end
   end
   object lbUnicodeRegions: TListBox

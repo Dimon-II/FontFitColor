@@ -60,6 +60,7 @@ type
       State: TDragState; var Accept: Boolean);
     procedure lv_FontDragDrop(Sender, Source: TObject; X, Y: Integer);
     procedure aCopyExecute(Sender: TObject);
+    procedure rgd_TablesDblClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -197,7 +198,10 @@ begin
 //--ExtTextOut(Sender.Canvas.Handle, Rect.Left+8,Rect.Top+8, 0  , nil, ch,   2, nil);
     s:= dyTTF.GetSVG(Idx);
     if s<>'' then
+      if copy(s,1,3)<>#$1F+#$8B+#$08 then
     try
+
+
       Sender.Canvas.MoveTo(Sender.Canvas.PenPos.X + Rect.Width div 2 - 8  , Rect.Top);
       Sender.Canvas.LineTo(Sender.Canvas.PenPos.X, Rect.Bottom);
 
@@ -443,6 +447,17 @@ begin
 // lv_Font.Groups.EndUpdate;
  lv_Font.Items.EndUpdate;
  lv_Font.OnCustomDrawItem := lv_FontCustomDrawItem;
+end;
+
+procedure TFormTTF.rgd_TablesDblClick(Sender: TObject);
+var fs:TFileStream;
+  s:string;
+begin
+  inherited;
+  s := ChangeFileExt(dyTTF.FontFace.FileName,'.'+rgd_Tables.Cells[0,rgd_Tables.Row]);
+  fs:=TFileStream.Create(s, fmCreate);
+  fs.Write(dyTTF.FontData[dyTTF.ttTableDirectory[rgd_Tables.Row-1].uOffset], dyTTF.ttTableDirectory[rgd_Tables.Row-1].uLength);
+  fs.Destroy;
 end;
 
 procedure TFormTTF.tbFontInfoClick(Sender: TObject);

@@ -12,9 +12,7 @@ object FormGlyph: TFormGlyph
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   OnCreate = FormCreate
-  PixelsPerInch = 96
   TextHeight = 13
   object Panel2: TPanel
     Left = 0
@@ -25,6 +23,7 @@ object FormGlyph: TFormGlyph
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 0
+    ExplicitWidth = 650
     object Panel3: TPanel
       Left = 502
       Top = 0
@@ -36,6 +35,7 @@ object FormGlyph: TFormGlyph
       BorderWidth = 5
       Caption = 'Step'
       TabOrder = 0
+      ExplicitLeft = 498
       object seGrid: TSpinEdit
         AlignWithMargins = True
         Left = 33
@@ -88,6 +88,7 @@ object FormGlyph: TFormGlyph
       Align = alClient
       Control = ToolBar3
       TabOrder = 1
+      ExplicitWidth = 498
       object ToolBar3: TToolBar
         Left = 0
         Top = 0
@@ -102,6 +103,7 @@ object FormGlyph: TFormGlyph
         ParentShowHint = False
         ShowHint = True
         TabOrder = 0
+        ExplicitWidth = 486
         object tbZero: TToolButton
           Left = 0
           Top = 0
@@ -207,6 +209,7 @@ object FormGlyph: TFormGlyph
       Align = alBottom
       Control = ToolBar2
       TabOrder = 2
+      ExplicitWidth = 650
       object ToolBar2: TToolBar
         Left = 0
         Top = 0
@@ -221,6 +224,7 @@ object FormGlyph: TFormGlyph
         ParentShowHint = False
         ShowHint = True
         TabOrder = 0
+        ExplicitWidth = 638
         object tbAlignMiddle: TToolButton
           Left = 0
           Top = 0
@@ -344,6 +348,8 @@ object FormGlyph: TFormGlyph
     ParentBackground = False
     ParentDoubleBuffered = False
     TabOrder = 1
+    ExplicitWidth = 650
+    ExplicitHeight = 364
     object pnt_Draw: TPaintBox
       AlignWithMargins = True
       Left = 8

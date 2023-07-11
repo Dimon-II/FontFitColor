@@ -338,6 +338,7 @@ var
 begin
   if fSelectedChar <> #0 then
     tbApplyClick(Nil);
+
   Caption := 'Glyph: '+Chr +' ' +IntToHex(ord(chr),4) +  ' ('+GetUnicodeName(ord(chr)) +') #'+IntToStr(Id);
   OldSVG := aSVG;
   EditSVG.LoadFromText(aSVG);
